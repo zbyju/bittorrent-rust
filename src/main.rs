@@ -14,6 +14,7 @@ fn decode_bencoded_value(encoded_value: &str) -> serde_json::Value {
         let number = number_string.parse::<i64>().unwrap();
         let string = &encoded_value[colon_index + 1..colon_index + 1 + number as usize];
         return serde_json::Value::String(string.to_string());
+    } else if encoded_value.chars.next().unwrap() == 'i' {
     } else {
         panic!("Unhandled encoded value: {}", encoded_value)
     }
@@ -25,13 +26,11 @@ fn main() {
     let command = &args[1];
 
     if command == "decode" {
-        // You can use print statements as follows for debugging, they'll be visible when running tests.
         println!("Logs from your program will appear here!");
 
-        // Uncomment this block to pass the first stage
-        // let encoded_value = &args[2];
-        // let decoded_value = decode_bencoded_value(encoded_value);
-        // println!("{}", decoded_value.to_string());
+        let encoded_value = &args[2];
+        let decoded_value = decode_bencoded_value(encoded_value);
+        println!("{}", decoded_value.to_string());
     } else {
         println!("unknown command: {}", args[1])
     }
