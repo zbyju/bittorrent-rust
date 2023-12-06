@@ -58,7 +58,19 @@ fn decode_list(encoded_value: &str, index: usize) -> Option<(serde_json::Value, 
 }
 
 fn decode_dict(encoded_value: &str, index: usize) -> Option<(serde_json::Value, usize)> {
-    Some((serde_json::Value::String("test".to_string()), 0))
+    let mut dict = serde_json::Map::new();
+    let mut i = index + 1;
+
+    while encoded_value.chars().nth(i)? != 'e' {
+        let (dict_key, j) = decode(encoded_value, i)?;
+        let (dict_val, k) = decode(encoded_value, j)?;
+        match serde_json::Value::as_str(&dict_key) {
+            Some(key_str) => dict.insert(key_str.to_string(), dict_val),
+            None => return None, // or handle the error as you see fit
+        };
+        i = k;
+    }
+    Some((serde_json::Value::Object(dict), i + 1))
 }
 
 // Usage: your_bittorrent.sh decode "<encoded_value>"
